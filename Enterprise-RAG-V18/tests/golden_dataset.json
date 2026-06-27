@@ -1,0 +1,162 @@
+[
+    {
+        "question": "Why is my pod stuck in CrashLoopBackOff?",
+        "answer_a": "A CrashLoopBackOff means the pod's container is failing to start or crashing repeatedly. You should check the logs using `kubectl logs <pod-name>` to see the exact error.",
+        "contexts_a": ["Pod lifecycle and phases: CrashLoopBackOff occurs when a container repeatedly exits with a non-zero status."],
+        "answer_b": "Check the pod logs.",
+        "contexts_b": ["Logs can be viewed with kubectl logs."],
+        "ground_truth": "CrashLoopBackOff indicates that a container is repeatedly failing and Kubernetes is restarting it with an exponential backoff delay. To troubleshoot, you should inspect the container logs using `kubectl logs` and describe the pod to check events."
+    },
+    {
+        "question": "How do I fix a Node NotReady status?",
+        "answer_a": "A Node NotReady status usually means the kubelet is not communicating with the control plane. Check if the kubelet service is running on the node, and verify network connectivity between the node and the API server.",
+        "contexts_a": ["Node statuses: NotReady means kubelet stopped posting node status. Check kubelet service."],
+        "answer_b": "Restart the node.",
+        "contexts_b": ["Nodes can be restarted."],
+        "ground_truth": "Node NotReady typically points to kubelet issues. Verify the kubelet status (`systemctl status kubelet`), check for disk pressure or memory pressure conditions, and ensure the network link to the API server is intact."
+    },
+    {
+        "question": "What is the difference between a Role and a ClusterRole?",
+        "answer_a": "A Role applies to a specific namespace, while a ClusterRole applies globally across the entire cluster.",
+        "contexts_a": ["RBAC concepts: Role vs ClusterRole."],
+        "answer_b": "They are the same.",
+        "contexts_b": ["No context provided."],
+        "ground_truth": "A Role is restricted to a single namespace, whereas a ClusterRole is cluster-scoped and can be used to grant permissions across the entire cluster, such as access to nodes or cross-namespace resources."
+    },
+    {
+        "question": "How do I configure an HPA to scale based on custom metrics?",
+        "answer_a": "You need to set up the metrics-server and a custom metrics API adapter, then define the custom metric in the HPA configuration under the `metrics` field.",
+        "contexts_a": ["HPA custom metrics requires an adapter and configuring the metrics field."],
+        "answer_b": "Use the autoscale command.",
+        "contexts_b": ["kubectl autoscale creates an HPA."],
+        "ground_truth": "To scale on custom metrics, you must deploy a custom metrics API server (like the Prometheus adapter), and then define a metric of type Object, Pods, or External in the HPA spec's metrics array."
+    },
+    {
+        "question": "Why is my PVC pending?",
+        "answer_a": "A PVC is pending when there is no matching PV available, or the storage class cannot dynamically provision it.",
+        "contexts_a": ["PVC states: Pending means no PV is bound."],
+        "answer_b": "Storage is full.",
+        "contexts_b": ["Storage can get full."],
+        "ground_truth": "A PVC remains in Pending state if there is no available PersistentVolume that matches its request (size, access mode, storage class), or if dynamic provisioning is failing due to issues with the provisioner."
+    },
+    {
+        "question": "How do NetworkPolicies work?",
+        "answer_a": "NetworkPolicies define rules for how pods communicate with each other and other network endpoints, acting like a firewall at the pod level.",
+        "contexts_a": ["NetworkPolicies isolate pods."],
+        "answer_b": "They block all traffic.",
+        "contexts_b": ["By default, traffic is allowed."],
+        "ground_truth": "NetworkPolicies specify how groups of pods are allowed to communicate. By default, pods are non-isolated. Once a policy selects a pod, it becomes isolated and only traffic explicitly allowed by the policy is permitted."
+    },
+    {
+        "question": "How do I update a secret without restarting the pod?",
+        "answer_a": "If the secret is mounted as a volume, the kubelet automatically updates the files. The application must watch for file changes to reload them.",
+        "contexts_a": ["Mounted secrets update automatically."],
+        "answer_b": "You have to restart the pod.",
+        "contexts_b": ["Env vars require restarts."],
+        "ground_truth": "Secrets mounted as volumes are updated automatically by the kubelet (though it may take up to a minute). However, the application must be designed to hot-reload the file. If injected as environment variables, a pod restart is required."
+    },
+    {
+        "question": "Show me the top 5 users by token budget today.",
+        "answer_a": "I can run a SQL query on the `token_budgets` table to get that information.",
+        "contexts_a": ["The token_budgets table tracks usage."],
+        "answer_b": "I cannot access the DB.",
+        "contexts_b": [],
+        "ground_truth": "SELECT user_id, tokens_used FROM token_budgets WHERE date = CURRENT_DATE ORDER BY tokens_used DESC LIMIT 5;"
+    },
+    {
+        "question": "How do I drain a node safely?",
+        "answer_a": "Use `kubectl drain <node> --ignore-daemonsets --delete-emptydir-data`.",
+        "contexts_a": ["kubectl drain safely evicts pods."],
+        "answer_b": "Turn off the server.",
+        "contexts_b": [],
+        "ground_truth": "To safely drain a node, run `kubectl drain <node-name> --ignore-daemonsets`. You may also need `--delete-emptydir-data` if pods use local emptyDir storage, and `--force` for unmanaged pods."
+    },
+    {
+        "question": "What is an Ingress controller?",
+        "answer_a": "An Ingress controller is a load balancer that routes external HTTP/HTTPS traffic to internal services based on rules defined in Ingress resources.",
+        "contexts_a": ["Ingress controllers fulfill Ingress rules."],
+        "answer_b": "It is a type of service.",
+        "contexts_b": ["Services expose pods."],
+        "ground_truth": "An Ingress controller is a daemon (like NGINX or Traefik) deployed in the cluster that evaluates Ingress resources and manages traffic routing, SSL termination, and name-based virtual hosting."
+    },
+    {
+        "question": "How do I rollback a deployment?",
+        "answer_a": "Use `kubectl rollout undo deployment <name>`.",
+        "contexts_a": ["Rollouts can be undone."],
+        "answer_b": "Change the image tag back manually.",
+        "contexts_b": [],
+        "ground_truth": "Use `kubectl rollout undo deployment/<deployment-name>`. You can also specify a specific revision to rollback to using `--to-revision=<number>`."
+    },
+    {
+        "question": "Why use StatefulSets instead of Deployments?",
+        "answer_a": "StatefulSets provide stable network identities and persistent storage that stays attached to the specific pod replica even across restarts.",
+        "contexts_a": ["StatefulSets maintain identity."],
+        "answer_b": "They are for stateful apps.",
+        "contexts_b": [],
+        "ground_truth": "StatefulSets are used for applications that require unique network identifiers, stable persistent storage (via volumeClaimTemplates), and ordered, graceful deployment and scaling."
+    },
+    {
+        "question": "What is a DaemonSet?",
+        "answer_a": "A DaemonSet ensures that a copy of a specific Pod runs on all (or some) Nodes in the cluster.",
+        "contexts_a": ["DaemonSets run on every node."],
+        "answer_b": "It's a background process.",
+        "contexts_b": [],
+        "ground_truth": "A DaemonSet ensures that all (or a selected set of) nodes run a copy of a pod. It is commonly used for cluster storage daemons, log collection daemons, and node monitoring daemons."
+    },
+    {
+        "question": "How to check cluster events?",
+        "answer_a": "Run `kubectl get events --sort-by='.metadata.creationTimestamp'`.",
+        "contexts_a": ["Events show cluster activities."],
+        "answer_b": "Look at the logs.",
+        "contexts_b": [],
+        "ground_truth": "Use `kubectl get events`. To sort them chronologically, add `--sort-by='.metadata.creationTimestamp'`. They can help debug scheduling and lifecycle issues."
+    },
+    {
+        "question": "What is a Taint and Toleration?",
+        "answer_a": "Taints are applied to nodes to repel pods, and tolerations are applied to pods to allow them to schedule on tainted nodes.",
+        "contexts_a": ["Taints and tolerations work together."],
+        "answer_b": "They define node labels.",
+        "contexts_b": [],
+        "ground_truth": "Taints allow a node to repel a set of pods. Tolerations are applied to pods and allow (but do not require) the pods to schedule onto nodes with matching taints."
+    },
+    {
+        "question": "How to clear the token_budgets table?",
+        "answer_a": "I can generate a SQL query to truncate the table.",
+        "contexts_a": ["SQL generation handles table modification."],
+        "answer_b": "Delete the pods.",
+        "contexts_b": [],
+        "ground_truth": "TRUNCATE TABLE token_budgets;"
+    },
+    {
+        "question": "How to restrict pod CPU and memory usage?",
+        "answer_a": "Use resource requests and limits in the pod spec, and enforce them globally using a LimitRange.",
+        "contexts_a": ["Resource requests and limits control usage."],
+        "answer_b": "Change the VM size.",
+        "contexts_b": [],
+        "ground_truth": "Define `resources.requests` and `resources.limits` for CPU and memory in the container spec. To enforce default limits per namespace, create a `LimitRange` object."
+    },
+    {
+        "question": "What is the role of the kube-proxy?",
+        "answer_a": "It maintains network rules on nodes allowing communication to your Pods from network sessions inside or outside of your cluster.",
+        "contexts_a": ["kube-proxy handles networking."],
+        "answer_b": "It is an API proxy.",
+        "contexts_b": [],
+        "ground_truth": "kube-proxy is a network proxy that runs on each node. It maintains network rules (usually via iptables or IPVS) that allow network communication to Pods from inside or outside the cluster."
+    },
+    {
+        "question": "How to debug a failing init container?",
+        "answer_a": "Check its logs with `kubectl logs <pod> -c <init-container-name>`.",
+        "contexts_a": ["Init container logs can be viewed."],
+        "answer_b": "Restart the pod.",
+        "contexts_b": [],
+        "ground_truth": "To debug, view the specific init container's logs using `kubectl logs <pod-name> -c <init-container-name>`. The pod will remain in an Init:Error or Init:CrashLoopBackOff state until it succeeds."
+    },
+    {
+        "question": "What is a PodDisruptionBudget?",
+        "answer_a": "It defines the minimum number of available pods required during voluntary disruptions.",
+        "contexts_a": ["PDBs protect against voluntary disruptions."],
+        "answer_b": "It limits pod cost.",
+        "contexts_b": [],
+        "ground_truth": "A PodDisruptionBudget (PDB) limits the number of Pods of a replicated application that are down simultaneously from voluntary disruptions (like node drains for maintenance), ensuring high availability."
+    }
+]

@@ -1,0 +1,102 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+      "id": 2,
+      "title": "Requests per Second",
+      "type": "timeseries",
+      "targets": [{ "expr": "rate(http_requests_total[5m])", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 },
+      "id": 3,
+      "title": "p95 Latency",
+      "type": "timeseries",
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 4,
+      "title": "Pipeline Latency Breakdown (Per Node)",
+      "type": "timeseries",
+      "targets": [{ "expr": "rate(node_duration_seconds_sum[5m]) / rate(node_duration_seconds_count[5m])", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
+      "id": 5,
+      "title": "Detailed Cache Hit Rate",
+      "type": "gauge",
+      "targets": [{ "expr": "sum(rate(cache_hits_total[5m])) by (cache_type) / sum(rate(cache_requests_total[5m])) by (cache_type)", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
+      "id": 6,
+      "title": "CRAG Score Distribution",
+      "type": "heatmap",
+      "targets": [{ "expr": "sum(rate(crag_score_bucket[5m])) by (le)", "refId": "A", "format": "heatmap" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 8 },
+      "id": 7,
+      "title": "Self-RAG Loops",
+      "type": "bargauge",
+      "targets": [{ "expr": "sum(rate(self_rag_loops_total[1h])) by (intent)", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 },
+      "id": 8,
+      "title": "Error Rates by Intent",
+      "type": "timeseries",
+      "targets": [{ "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (intent)", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 9,
+      "title": "Token Budget Utilization (Tokens / User)",
+      "type": "stat",
+      "targets": [{ "expr": "sum(token_usage_total) by (user)", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 10,
+      "title": "Estimated Cost ($ USD) / User",
+      "type": "stat",
+      "targets": [{ "expr": "sum(token_usage_total) by (user) * 0.00001", "refId": "A" }]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 11,
+      "title": "Token Spending Over Time",
+      "type": "timeseries",
+      "targets": [{ "expr": "sum(rate(token_usage_total[1h]))", "refId": "A" }]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Enterprise RAG Complete Dashboard",
+  "uid": "enterprise-rag-v2",
+  "version": 2
+}
